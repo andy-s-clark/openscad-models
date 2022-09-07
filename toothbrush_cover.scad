@@ -1,5 +1,6 @@
-flip = false; // Print upside down to avoid using supports.
 wall_thickness = 2;
+
+// Inner dimensions for all widths and depths.
 
 base_bottom_width = 50;
 base_bottom_depth = 62;
@@ -19,20 +20,41 @@ tube_height = 166;
 
 spire_diameter = 16;
 spire_height = 40;
+spire_cap_height = 6;
+
+tube_spire_transition_height = 10;
 
 // Calculated
 base_taper = get_minimal_taper(base_bottom_depth, base_bottom_width, base_top_depth, base_top_width);
-base_max_bottom_diameter = base_bottom_width > base_bottom_depth ? base_bottom_width : base_bottom_depth;
-base_max_top_diameter = base_max_bottom_diameter * base_taper;
+base_top_width_actual = base_bottom_width * base_taper;
+base_top_depth_actual = base_bottom_depth * base_taper;
 
-color("yellow", 0.8) difference() {
-  basic_base(base_bottom_depth, base_bottom_width, base_height, wall_thickness, base_taper);
-  translate([0, base_bottom_depth/2-power_notch_offset, 0]) power_notch(power_notch_width, power_notch_depth, power_notch_height);
+union() {
+  color("yellow", 0.5) difference() {
+    basic_base(base_bottom_depth, base_bottom_width, base_height, wall_thickness, base_taper);
+    translate([0, base_bottom_depth/2-power_notch_offset, 0])
+      power_notch(power_notch_width, power_notch_depth, power_notch_height);
+  }
+
+  color("green", 0.5) translate([0, 0, base_height])
+    base_tube_transition(base_top_width_actual, base_top_depth_actual, tube_diameter, base_tube_transition_height, wall_thickness);
+
+  color("red", 0.5) translate([0, 0, base_height+base_tube_transition_height])
+    tube(tube_diameter, tube_height - base_tube_transition_height, wall_thickness);
+  // TODO tube air holes
+
+  color("yellow", 0.5) translate([0, 0, base_height+tube_height])
+    tube_spire_transition(tube_diameter, spire_diameter, tube_spire_transition_height, wall_thickness);
+
+  color("green", 0.5) translate([0, 0, base_height+tube_height+tube_spire_transition_height])
+    tube(spire_diameter, spire_height - tube_spire_transition_height, wall_thickness);
+  // TODO tube air holes
+  
+  color("red", 0.5) translate([0, 0, base_height+tube_height+spire_height])
+    spire_cap(spire_diameter, spire_cap_height, wall_thickness);
+  
+  // TODO Head Holder
 }
-
-translate([0, 0, base_height]) base_tube_transition(base_max_top_diameter, tube_diameter, base_tube_transition_height, wall_thickness);
-
-translate([0, 0, base_height+base_tube_transition_height]) tube(tube_diameter, tube_height - base_tube_transition_height, wall_thickness);
 
 module tube(diameter, height, wall_thickness) {
   difference() {
@@ -41,15 +63,17 @@ module tube(diameter, height, wall_thickness) {
   }
 }
 
-module base_tube_transition(bottom_diameter, top_diameter, height, wall_thickness) {
-  buffer = 3;
-  translate([0, 0, buffer]) difference() {
-    cylinder(h=height-buffer, r1=bottom_diameter/2+wall_thickness, r2=top_diameter/2+wall_thickness);
-    cylinder(h=height-buffer, r1=bottom_diameter/2, r2=top_diameter/2);
-  }
-  difference() {
-    cylinder(h=buffer, r=bottom_diameter/2+wall_thickness);
-    cylinder(h=buffer, r=bottom_diameter/2);
+module base_tube_transition(bottom_width, bottom_depth, top_diameter, height, wall_thickness) {
+  // LATER Figure out why the bottom is slightly larger than the top of the base.
+  increment = 0.1;
+  slices = height * 1/increment;
+  for(i=[0:slices]) {
+    width = bottom_width * (1-i/slices) + top_diameter * i/slices;
+    depth = bottom_depth * (1-i/slices) + top_diameter * i/slices;
+    translate([0, 0, i*increment]) linear_extrude(increment) difference() {
+      scale([1,depth/width,1]) circle(d=width+2*wall_thickness);
+      scale([1,depth/width,1]) circle(d=width);
+    }
   }
 }
 
@@ -62,77 +86,22 @@ function get_minimal_taper(bottom_depth, bottom_width, top_depth, top_width) = (
 
 module basic_base(depth, width, height, wall_thickness, taper) {
   linear_extrude(height, scale=taper) difference() {
-    scale([1,depth/width,1]) circle(d=width+wall_thickness);
+    scale([1,depth/width,1]) circle(d=width+2*wall_thickness);
     scale([1,depth/width,1]) circle(d=width);
   }
 }
 
-//cap_thickness=3;
-//cap_taper=0.8;
-//wall_thickness=3;
-//tube_height=260;
-//air_hole_width=3;
-//tube_taper=0.9;
-//power_notch_width=30;
-//power_notch_depth=20;
-//power_notch_height=10;
-//max_width=100;
-//
-//base_taper=base_top_width/base_width;
-//
-//// Force Goldfeather needs to be enabled in preferences for a preview to work okay. Rendering works fine regardless.
-//tube_base();
-//
-//* translate([0, 0, flip ? base_height+tube_height+cap_thickness : 0]) rotate([flip ? 180 : 0,0,0]) union() {
-//  tube_base();
-//  translate([0,0,base_height]) main_tube();
-//  translate([0, 0, base_height+tube_height]) cap();
-//}
-//
-//module main_oval() {
-//  scale([1,base_depth/base_width,1]) circle(d=base_width+wall_thickness);
-//}
-//
-//module main_oval_hollow() {
-//  difference() {
-//    main_oval();
-//    scale([1,base_depth/base_width,1]) circle(d=base_width);
-//  }
-//}
-//
-//module power_notch() {
-//  cube([power_notch_width, power_notch_depth, power_notch_height]);
-//}
-//
-//module tube_base() {
-//  difference() {
-//    linear_extrude(height=base_height, scale=base_taper) main_oval_hollow();
-//    translate([power_notch_width/-2, base_depth/2-power_notch_depth/2, 0]) power_notch();
-//  }
-//}
-//
-//module main_tube() {
-//  difference() {
-//    linear_extrude(height=tube_height, scale=tube_taper) scale([base_taper,base_taper,1]) main_oval_hollow();
-//    main_tube_air_holes();
-//  }
-//}
-//
-//module main_tube_air_holes() {
-//  dupe_count=floor(tube_height/air_hole_width/2)-1;
-//  for(j=[1:dupe_count]) {
-//    hole_rotate = j/2==floor(j/2) ? 0 : 15;
-//    translate([0,0,j*air_hole_width*2]) rotate([0,0,hole_rotate])
-//    for(i=[0:30:180]) {
-//      rotate([90,0,i])
-//        translate([0,0,max_width/-2])
-//          linear_extrude(max_width)
-//            circle(d=air_hole_width);
-//    }
-//  }
-//}
-//
-//module cap() {
-//  linear_extrude(height=cap_thickness, scale=cap_taper)
-//    scale([base_taper*tube_taper, base_taper*tube_taper, 1]) main_oval();
-//}
+module tube_spire_transition(bottom_diameter, top_diameter, height, wall_thickness) {
+  difference() {
+    cylinder(h=height, r1=bottom_diameter/2+wall_thickness, r2=top_diameter/2+wall_thickness);
+    cylinder(h=height, r1=bottom_diameter/2, r2=top_diameter/2);
+  }
+}
+
+module spire_cap(diameter, height, wall_thickness) {
+  difference() {
+    cylinder(h=height, r1=diameter/2+wall_thickness, r2=diameter/20+wall_thickness);
+    cylinder(h=height, r1=diameter/2, r2=0);
+  }
+}
+
