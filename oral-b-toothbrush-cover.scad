@@ -39,16 +39,18 @@ union() {
   color("green", 0.5) translate([0, 0, base_height])
     base_tube_transition(base_top_width_actual, base_top_depth_actual, tube_diameter, base_tube_transition_height, wall_thickness);
 
-  color("red", 0.5) translate([0, 0, base_height+base_tube_transition_height])
-    tube(tube_diameter, tube_height - base_tube_transition_height, wall_thickness);
-  // TODO tube air holes
+  color("red", 0.5) translate([0, 0, base_height+base_tube_transition_height]) difference() {
+      tube(tube_diameter, tube_height - base_tube_transition_height, wall_thickness);
+      tube_air_holes(tube_diameter+3*wall_thickness, tube_height - base_tube_transition_height, wall_thickness, 30);
+    }
 
   color("yellow", 0.5) translate([0, 0, base_height+tube_height])
     tube_spire_transition(tube_diameter, spire_diameter, tube_spire_transition_height, wall_thickness);
 
-  color("green", 0.5) translate([0, 0, base_height+tube_height+tube_spire_transition_height])
+  color("green", 0.5) translate([0, 0, base_height+tube_height+tube_spire_transition_height]) difference() {
     tube(spire_diameter, spire_height - tube_spire_transition_height, wall_thickness);
-  // TODO tube air holes
+    tube_air_holes(spire_diameter+3*wall_thickness, spire_height - tube_spire_transition_height, wall_thickness, 45);
+  }
   
   color("red", 0.5) translate([0, 0, base_height+tube_height+spire_height])
     spire_cap(spire_diameter, spire_cap_height, wall_thickness);
@@ -60,6 +62,16 @@ module tube(diameter, height, wall_thickness) {
   difference() {
     cylinder(h=height, r=diameter/2+wall_thickness);
     cylinder(h=height, r=diameter/2);
+  }
+}
+
+module tube_air_holes(cylinder_diameter, cylinder_height, hole_diameter, angular_increment) {
+  for(i=[1:floor((cylinder_height-2*hole_diameter)/hole_diameter/2)]) {
+    translate([0, 0, i*hole_diameter*2-hole_diameter/2]) rotate([0, 0, i/2==floor(i/2) ? 0 : 15])
+      for(r=[0:angular_increment:180-angular_increment]) {
+        rotate([0, 0, r]) translate([0, cylinder_diameter/2, hole_diameter])
+            rotate([90, 0, 0]) cylinder(h=cylinder_diameter, r=hole_diameter);  
+      }
   }
 }
 
@@ -100,8 +112,8 @@ module tube_spire_transition(bottom_diameter, top_diameter, height, wall_thickne
 
 module spire_cap(diameter, height, wall_thickness) {
   difference() {
-    cylinder(h=height, r1=diameter/2+wall_thickness, r2=diameter/20+wall_thickness);
-    cylinder(h=height, r1=diameter/2, r2=0);
+    color("blue", 0.5) cylinder(h=height, r1=diameter/2+wall_thickness, r2=diameter/20+wall_thickness);
+    cylinder(h=height, r1=diameter/2, r2=wall_thickness);
   }
 }
 
