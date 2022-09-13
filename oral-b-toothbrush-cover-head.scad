@@ -6,7 +6,11 @@ height = 65;
 arc_round_ratio = 0.3;
 
 union() {
-  color("red", 0.3) translate([0, 0, wall_thickness]) half_rounded_box(width, depth, height, arc_round_ratio, wall_thickness);
+  color("red", 0.3) difference() {
+    translate([0, 0, wall_thickness]) half_rounded_box(width, depth, height, arc_round_ratio, wall_thickness);
+    half_rounded_box_air_holes(width+2*wall_thickness, depth, height, wall_thickness);
+  }
+
   color("green", 0.5) drain_end(width, depth, arc_round_ratio, wall_thickness);
 }
 
@@ -37,5 +41,14 @@ module rounded_half_rectangle(width, depth, round_ratio) {
       translate([width/-2, -1*arc_depth, 0]) square([width, arc_depth]);
     }
     translate([width/-2, 0, 0]) square([width, depth-arc_depth]);
+  }
+}
+
+module half_rounded_box_air_holes(width, depth, height, hole_diameter) {
+  for(i=[1:floor(height/hole_diameter/2)]) {
+    translate([0, 0, 2*i*hole_diameter]) for(j=[1:floor(depth/hole_diameter/2)]) {
+      translate([0, 2*j*hole_diameter, 0]) rotate([0, 90, 0]) cylinder(h=width, r=hole_diameter/2, center=true);
+    }
+    translate([0, depth/2+2*hole_diameter, 2*i*hole_diameter]) rotate([90, 0, 0]) cylinder(h=depth, r=hole_diameter/2, center=true);
   }
 }
