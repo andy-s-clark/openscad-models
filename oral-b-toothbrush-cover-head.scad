@@ -4,6 +4,9 @@ width = 12;
 depth = 22;
 height = 65;
 arc_round_ratio = 0.3;
+mount_wiggle_room = 0.5;
+
+assert(mount_wiggle_room*2 < wall_thickness, "mount_wiggle_room must be less than half of wall_thickness.");
 
 union() {
   color("red", 0.3) difference() {
@@ -12,6 +15,8 @@ union() {
   }
 
   color("green", 0.5) drain_end(width, depth, arc_round_ratio, wall_thickness);
+  
+  color("blue", 0.5) case_mount(width, height, wall_thickness, mount_wiggle_room);
 }
 
 module half_rounded_box(width, depth, height, round_ratio, wall_thickness) {
@@ -51,4 +56,11 @@ module half_rounded_box_air_holes(width, depth, height, hole_diameter) {
     }
     translate([0, depth/2+2*hole_diameter, 2*i*hole_diameter]) rotate([90, 0, 0]) cylinder(h=depth, r=hole_diameter/2, center=true);
   }
+}
+
+module case_mount(width, height, wall_thickness, wiggle_room) {
+  translate([(wall_thickness-2*wiggle_room)/-2, -1*wall_thickness-2*wiggle_room, 0])
+    cube([wall_thickness-2*wiggle_room, wall_thickness+2*wiggle_room, height]);
+  translate([width/-2+wiggle_room, -2*wall_thickness, 0])
+    cube([width-2*wiggle_room, wall_thickness-2*wiggle_room, height]);
 }
