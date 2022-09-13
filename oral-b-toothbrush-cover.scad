@@ -24,6 +24,9 @@ spire_cap_height = 6;
 
 tube_spire_transition_height = 10;
 
+head_case_mount_width = 12;
+head_case_mount_height = 65;
+
 // Calculated
 base_taper = get_minimal_taper(base_bottom_depth, base_bottom_width, base_top_depth, base_top_width);
 base_top_width_actual = base_bottom_width * base_taper;
@@ -55,7 +58,7 @@ union() {
   color("red", 0.5) translate([0, 0, base_height+tube_height+spire_height])
     spire_cap(spire_diameter, spire_cap_height, wall_thickness);
   
-  // TODO Head Holder
+  color("blue", 0.5) translate([0, tube_diameter/-2, base_height+base_tube_transition_height]) head_case_mount(head_case_mount_width, head_case_mount_height, wall_thickness);
 }
 
 module tube(diameter, height, wall_thickness) {
@@ -117,3 +120,14 @@ module spire_cap(diameter, height, wall_thickness) {
   }
 }
 
+module head_case_mount(width, height, wall_thickness) {
+  // Slotted box
+  translate([0, 0, wall_thickness*4]) difference() {
+    translate([width/-2, -4*wall_thickness, 0]) cube([width, 4*wall_thickness, height]);
+    translate([(width-2*wall_thickness)/-2, -3*wall_thickness, wall_thickness]) cube([width-2*wall_thickness, wall_thickness, height-wall_thickness]);
+    translate([wall_thickness/-2, -4*wall_thickness, wall_thickness]) cube([wall_thickness, wall_thickness, height-wall_thickness]);
+  }
+  // Support
+  translate([0, 0, wall_thickness*4])
+  rotate([180, 0, 0]) linear_extrude(height=4*wall_thickness, scale=0) translate([width/-2, 0, 0]) square([width, wall_thickness*4]);
+}
