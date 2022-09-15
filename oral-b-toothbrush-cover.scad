@@ -10,7 +10,7 @@ base_height = 26;
 
 power_notch_width = 32;
 power_notch_depth = 20;
-power_notch_height = 11;
+power_notch_height = 8;
 power_notch_offset = 10;
 
 base_tube_transition_height = 10;
@@ -61,6 +61,9 @@ union() {
   color("blue", 0.5) translate([0, tube_diameter/-2, base_height+base_tube_transition_height]) head_case_mount(head_case_mount_width, head_case_mount_height, wall_thickness);
 }
 
+// Use the lesser taper to ensure clearance (closest to 1.0)
+function get_minimal_taper(bottom_depth, bottom_width, top_depth, top_width) = (top_width / bottom_width) > (top_depth / bottom_depth) ? top_width / bottom_width : top_depth / bottom_depth;
+
 module tube(diameter, height, wall_thickness) {
   difference() {
     cylinder(h=height, r=diameter/2+wall_thickness);
@@ -93,11 +96,11 @@ module base_tube_transition(bottom_width, bottom_depth, top_diameter, height, wa
 }
 
 module power_notch(width, depth, height) {
-  translate([0, depth/2, height/2]) cube([width, depth, height], center=true);
+  translate([0, depth/2, height/2]) union() {
+    cube([width, depth, height], center=true);
+    translate([0, 0, height/2]) rotate([90, 0, 0]) cylinder(h=depth, d=width, center=true);
+  }
 }
-
-// Use the lesser taper to ensure clearance (closest to 1.0)
-function get_minimal_taper(bottom_depth, bottom_width, top_depth, top_width) = (top_width / bottom_width) > (top_depth / bottom_depth) ? top_width / bottom_width : top_depth / bottom_depth;
 
 module basic_base(depth, width, height, wall_thickness, taper) {
   linear_extrude(height, scale=taper) difference() {
