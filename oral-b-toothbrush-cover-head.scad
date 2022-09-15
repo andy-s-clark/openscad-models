@@ -3,6 +3,7 @@ wall_thickness = 2;
 width = 12;
 depth = 22;
 height = 65;
+mount_width = 7;
 arc_round_ratio = 0.3;
 mount_wiggle_room = 0.5;
 
@@ -16,7 +17,7 @@ union() {
 
   color("green", 0.5) drain_end(width, depth, arc_round_ratio, wall_thickness);
   
-  color("blue", 0.5) case_mount(width, height, wall_thickness, mount_wiggle_room);
+  color("blue", 0.5) case_mount(mount_width, height, wall_thickness, mount_wiggle_room);
 }
 
 module half_rounded_box(width, depth, height, round_ratio, wall_thickness) {
