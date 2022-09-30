@@ -16,13 +16,7 @@ power_notch_offset = 10;
 base_tube_transition_height = 10;
 
 tube_diameter = 42;
-tube_height = 166;
-
-spire_diameter = 16;
-spire_height = 40;
-spire_cap_height = 6;
-
-tube_spire_transition_height = 10;
+tube_height = 206;
 
 head_case_mount_width = 12;
 head_case_mount_height = 65;
@@ -43,22 +37,16 @@ union() {
     base_tube_transition(base_top_width_actual, base_top_depth_actual, tube_diameter, base_tube_transition_height, wall_thickness);
 
   color("red", 0.5) translate([0, 0, base_height+base_tube_transition_height]) difference() {
-      tube(tube_diameter, tube_height - base_tube_transition_height, wall_thickness);
-      tube_air_holes(tube_diameter+3*wall_thickness, tube_height - base_tube_transition_height, wall_thickness, 30);
-    }
-
-  color("yellow", 0.5) translate([0, 0, base_height+tube_height])
-    tube_spire_transition(tube_diameter, spire_diameter, tube_spire_transition_height, wall_thickness);
-
-  color("green", 0.5) translate([0, 0, base_height+tube_height+tube_spire_transition_height]) difference() {
-    tube(spire_diameter, spire_height - tube_spire_transition_height, wall_thickness);
-    tube_air_holes(spire_diameter+3*wall_thickness, spire_height - tube_spire_transition_height, wall_thickness, 45);
+    tube(tube_diameter, tube_height - base_tube_transition_height, wall_thickness);
+    tube_air_holes(tube_diameter+3*wall_thickness, tube_height - base_tube_transition_height, wall_thickness, 30);
   }
   
-  color("red", 0.5) translate([0, 0, base_height+tube_height+spire_height])
-    spire_cap(spire_diameter, spire_cap_height, wall_thickness);
-  
-  color("blue", 0.5) translate([0, tube_diameter/-2, base_height+base_tube_transition_height]) head_case_mount(head_case_mount_width, head_case_mount_height, wall_thickness);
+  color("green", 0.5) translate([0, 0, base_height+tube_height])
+    cap(tube_diameter, wall_thickness, wall_thickness, wall_thickness);
+    
+  color("blue", 0.8)
+  translate([0, tube_diameter/-2, base_height+base_tube_transition_height]) 
+    head_case_mount(head_case_mount_width, head_case_mount_height, wall_thickness);
 }
 
 // Use the lesser taper to ensure clearance (closest to 1.0)
@@ -82,7 +70,6 @@ module tube_air_holes(cylinder_diameter, cylinder_height, hole_diameter, angular
 }
 
 module base_tube_transition(bottom_width, bottom_depth, top_diameter, height, wall_thickness) {
-  // LATER Figure out why the bottom is slightly larger than the top of the base.
   increment = 0.1;
   slices = height * 1/increment;
   for(i=[0:slices]) {
@@ -109,28 +96,24 @@ module basic_base(depth, width, height, wall_thickness, taper) {
   }
 }
 
-module tube_spire_transition(bottom_diameter, top_diameter, height, wall_thickness) {
+module cap(diameter, height, wall_thickness, hole_diameter) {
+  holes = 8;
   difference() {
-    cylinder(h=height, r1=bottom_diameter/2+wall_thickness, r2=top_diameter/2+wall_thickness);
-    cylinder(h=height, r1=bottom_diameter/2, r2=top_diameter/2);
-  }
-}
-
-module spire_cap(diameter, height, wall_thickness) {
-  difference() {
-    color("blue", 0.5) cylinder(h=height, r1=diameter/2+wall_thickness, r2=diameter/20+wall_thickness);
-    cylinder(h=height, r1=diameter/2, r2=wall_thickness);
+    cylinder(h=height, r=diameter/2+wall_thickness);
+    for(i=[0:holes-1]) {
+      rotate([0, 0, 360/holes*i]) translate([diameter/4, 0, 0]) cylinder(h=wall_thickness, r=hole_diameter);
+    }
   }
 }
 
 module head_case_mount(width, height, wall_thickness) {
   // Slotted box
   translate([0, 0, wall_thickness*4]) difference() {
-    translate([width/-2, -4*wall_thickness, 0]) cube([width, 4*wall_thickness, height]);
-    translate([(width-2*wall_thickness)/-2, -3*wall_thickness, wall_thickness]) cube([width-2*wall_thickness, wall_thickness, height-wall_thickness]);
-    translate([wall_thickness/-2, -4*wall_thickness, wall_thickness]) cube([wall_thickness, wall_thickness, height-wall_thickness]);
+    translate([width/-2, -3*wall_thickness, 0]) cube([width, 3*wall_thickness, height]);
+    translate([(width-2*wall_thickness)/-2, -2*wall_thickness, 0]) cube([width-2*wall_thickness, wall_thickness, height]);
+    translate([wall_thickness/-2, -3*wall_thickness, 0]) cube([wall_thickness, wall_thickness, height]);
   }
   // Support
   translate([0, 0, wall_thickness*4])
-  rotate([180, 0, 0]) linear_extrude(height=4*wall_thickness, scale=0) translate([width/-2, 0, 0]) square([width, wall_thickness*4]);
+  rotate([180, 0, 0]) linear_extrude(height=3*wall_thickness, scale=0) translate([width/-2, 0, 0]) square([width, wall_thickness*3]);
 }
