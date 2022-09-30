@@ -21,6 +21,8 @@ tube_height = 206;
 head_case_mount_width = 12;
 head_case_mount_height = 65;
 
+cap_height = 5;
+
 // Calculated
 base_taper = get_minimal_taper(base_bottom_depth, base_bottom_width, base_top_depth, base_top_width);
 base_top_width_actual = base_bottom_width * base_taper;
@@ -42,7 +44,7 @@ union() {
   }
   
   color("green", 0.5) translate([0, 0, base_height+tube_height])
-    cap(tube_diameter, wall_thickness, wall_thickness, wall_thickness);
+    cap(tube_diameter, cap_height, wall_thickness, wall_thickness);
     
   color("blue", 0.8)
   translate([0, tube_diameter/-2, base_height+base_tube_transition_height]) 
@@ -98,11 +100,14 @@ module basic_base(depth, width, height, wall_thickness, taper) {
 
 module cap(diameter, height, wall_thickness, hole_diameter) {
   holes = 8;
+  taper = 0.1;
   difference() {
-    cylinder(h=height, r=diameter/2+wall_thickness);
+    cylinder(h=height, r1=diameter/2+wall_thickness, r2=diameter*taper+wall_thickness);
+    cylinder(h=height-wall_thickness, r1=diameter/2, r2=diameter*taper);
     for(i=[0:holes-1]) {
-      rotate([0, 0, 360/holes*i]) translate([diameter/4, 0, 0]) cylinder(h=wall_thickness, r=hole_diameter);
+      rotate([0, 0, 360/holes*i]) translate([diameter/3, 0, 0]) cylinder(h=height, r=hole_diameter);
     }
+    cylinder(h=height, r=hole_diameter);
   }
 }
 
