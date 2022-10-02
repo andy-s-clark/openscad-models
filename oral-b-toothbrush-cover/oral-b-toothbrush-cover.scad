@@ -4,8 +4,8 @@ wall_thickness = 2;
 
 base_bottom_width = 50;
 base_bottom_depth = 62;
-base_top_width = 42;
-base_top_depth = 55;
+base_top_width = 44;
+base_top_depth = 57;
 base_height = 26;
 
 power_notch_width = 32;
