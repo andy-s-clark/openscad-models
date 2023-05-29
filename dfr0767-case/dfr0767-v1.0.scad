@@ -50,6 +50,14 @@ bolt_support_height = pcb_height - bolt_support_height_offset;
 bolt_support_x_center_offset = bolt_support_x_distance/2; // x distance between the center and the bolt_support.
 bolt_support_far_y_center_offset = interior_depth/2-bolt_support_pcb_far_offset; // y distance between the center and the far bolt_support.
 
+//color("red", 1.0)
+//    translate([interior_width/2, -interior_depth/2, pcb_height])
+//      difference() {
+//        cube([wall_thickness, usb_cutout_width, usb_cutout_height]);
+//        translate([(wall_thickness-punch_out_width)/2, 0, 0])
+//          cube([punch_out_width, usb_cutout_width, usb_cutout_height]);
+//      }
+
 
 color("blue", 0.5)
 union() {
@@ -59,15 +67,27 @@ union() {
     
     // RJ45 cutout
     translate([-interior_width/2, -wall_thickness-interior_depth/2 , pcb_height-rj45_cutout_height])
-      cube([rj45_cutout_width, wall_thickness-punch_out_width, rj45_cutout_height]);
+      difference() {
+        cube([rj45_cutout_width, wall_thickness, rj45_cutout_height]);
+        translate([0, (wall_thickness-punch_out_width)/2, 0])
+          cube([rj45_cutout_width, punch_out_width, rj45_cutout_height]);
+      }
     
     // Power cutout
-    translate([interior_width/2 - power_cutout_width - power_cutout_x_offset, -wall_thickness-interior_depth/2, pcb_height-power_cutout_height])
-      cube([power_cutout_width, wall_thickness-punch_out_width, power_cutout_height]);
+    translate([interior_width/2 - power_cutout_width - power_cutout_x_offset, -(interior_depth/2+wall_thickness-punch_out_width*0), pcb_height-power_cutout_height])
+      difference() {
+        cube([power_cutout_width, wall_thickness, power_cutout_height]);
+        translate([0, (wall_thickness-punch_out_width)/2, 0])
+          cube([power_cutout_width, punch_out_width, power_cutout_height]);
+      }
 
     // USB/reset cutout
-    translate([interior_width/2+punch_out_width, -interior_depth/2, pcb_height])
-      cube([wall_thickness-punch_out_width, usb_cutout_width, usb_cutout_height]);
+    translate([interior_width/2, -interior_depth/2, pcb_height-usb_cutout_height])
+      difference() {
+        cube([wall_thickness, usb_cutout_width, usb_cutout_height]);
+        translate([(wall_thickness-punch_out_width)/2, 0, 0])
+          cube([punch_out_width, usb_cutout_width, usb_cutout_height]);
+      }
 
     // GPIO cutout
     translate([-gpio_cutout_width/2, interior_depth/2-gpio_cutout_depth, 0])
