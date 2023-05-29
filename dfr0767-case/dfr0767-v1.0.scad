@@ -26,9 +26,6 @@ interior_height = case_height+pcb_tolerance;
 bolt_support_x_center_offset = bolt_support_x_distance/2; // x distance between the center and the bolt_support.
 bolt_support_far_y_center_offset = interior_depth/2-bolt_support_pcb_far_offset; // y distance between the center and the far bolt_support.
 
-echo(bolt_support_x_center_offset);
-echo(bolt_support_far_y_center_offset);
-
 color("blue", 0.5)
   case_bottom(interior_width, interior_depth, interior_height, wall_thickness);
 
@@ -61,7 +58,7 @@ module case_bottom(width, depth, height, wall_thickness) {
 module bolt_support(height, diameter, wall_thickness) {
   translate([0, 0, height/2])
   difference() {
-    cylinder(h=height, d=diameter+wall_thickness, center=true);
+    cylinder(h=height, d1=diameter+4*wall_thickness, d2=diameter+wall_thickness, center=true);
     translate([0, 0, wall_thickness/2])
       cylinder(h=height-wall_thickness, d=diameter, center=true);
   }
