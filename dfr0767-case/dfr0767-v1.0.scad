@@ -31,6 +31,9 @@ power_cutout_x_offset = 5.00;
 mount_support_width = 16.00;
 mount_support_hole_diameter = 3.00;
 
+fan_wires_track_width = 5;
+fan_wires_track_height = 10;
+
 
 interior_width = case_width+pcb_tolerance;
 interior_depth = case_depth+pcb_tolerance;
@@ -40,7 +43,8 @@ bolt_support_height = pcb_height - bolt_support_height_offset;
 bolt_support_x_center_offset = bolt_support_x_distance/2; // x distance between the center and the bolt_support.
 bolt_support_far_y_center_offset = interior_depth/2-bolt_support_pcb_far_offset; // y distance between the center and the far bolt_support.
 
-color("blue", 0.5)
+
+color("blue", 0.8)
 union() {
   // case_bottom w/ cutouts
   difference() {
@@ -53,7 +57,12 @@ union() {
     // Power cutout
     translate([interior_width/2 - power_cutout_width - power_cutout_x_offset, -wall_thickness-interior_depth/2, pcb_height-power_cutout_height])
       cube([power_cutout_width, wall_thickness-punch_out_width, power_cutout_height]);
+
+    // Fan wires track
+    translate([-fan_wires_track_width/2, interior_depth/2, pcb_height/2])
+      cube([fan_wires_track_width, wall_thickness/2, fan_wires_track_height]);
   }
+
 
   // Far left bolt support.
   translate([-bolt_support_x_center_offset, bolt_support_far_y_center_offset, 0])
