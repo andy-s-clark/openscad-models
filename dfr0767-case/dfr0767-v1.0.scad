@@ -9,7 +9,7 @@ case_height = 30.00; // Does not include the heat sink which sticks out the top.
 case_depth = 61.50;
 
 wall_thickness = 2.00; // YMMV.
-punch_out_width = 1.0; // Cutouts used for support to be punched out after printing.
+punch_out_width = 1.00; // Cutouts used for support to be punched out after printing. Set to zero if printed with supports.
 pcb_tolerance = 0.50; // Extra space around the edges of the PCB.
 pcb_height = 18.00; // Height above the bottom of the case.
 
@@ -37,30 +37,36 @@ bolt_support_x_center_offset = bolt_support_x_distance/2; // x distance between 
 bolt_support_far_y_center_offset = interior_depth/2-bolt_support_pcb_far_offset; // y distance between the center and the far bolt_support.
 
 color("blue", 0.5)
-  difference() {
-    case_bottom(interior_width, interior_depth, interior_height, wall_thickness);
-    translate([-interior_width/2, -wall_thickness-interior_depth/2 , pcb_height-rj45_cutout_height]) // RJ45 cutout
-      cube([rj45_cutout_width, wall_thickness-punch_out_width, rj45_cutout_height]);
-    translate([interior_width/2 - power_cutout_width - power_cutout_x_offset, -wall_thickness-interior_depth/2, pcb_height-power_cutout_height]) // Power cutout
-      cube([power_cutout_width, wall_thickness-punch_out_width, power_cutout_height]);
+  union() {
+    // case_bottom w/ cutouts
+    difference() {
+      case_bottom(interior_width, interior_depth, interior_height, wall_thickness);
+      
+      // RJ45 cutout
+      translate([-interior_width/2, -wall_thickness-interior_depth/2 , pcb_height-rj45_cutout_height])
+        cube([rj45_cutout_width, wall_thickness-punch_out_width, rj45_cutout_height]);
+      
+      // Power cutout
+      translate([interior_width/2 - power_cutout_width - power_cutout_x_offset, -wall_thickness-interior_depth/2, pcb_height-power_cutout_height])
+        cube([power_cutout_width, wall_thickness-punch_out_width, power_cutout_height]);
+    }
+
+    // Far left bolt support.
+    translate([-bolt_support_x_center_offset, bolt_support_far_y_center_offset, 0])
+      bolt_support(bolt_support_height, bolt_support_hole_diameter, bolt_support_wall_thickness);
+
+    // Far right bolt support.
+    translate([bolt_support_x_center_offset, bolt_support_far_y_center_offset, 0])
+      bolt_support(bolt_support_height, bolt_support_hole_diameter, bolt_support_wall_thickness);
+
+    // Near left bolt support.
+    translate([-bolt_support_x_center_offset, bolt_support_far_y_center_offset-bolt_support_y_distance, 0])
+      bolt_support(bolt_support_height, bolt_support_hole_diameter, bolt_support_wall_thickness);
+
+    // Near right bolt support.
+    translate([bolt_support_x_center_offset, bolt_support_far_y_center_offset-bolt_support_y_distance, 0])
+      bolt_support(bolt_support_height, bolt_support_hole_diameter, bolt_support_wall_thickness);
   }
-  
-
-color("green", 0.5)
-  translate([-bolt_support_x_center_offset, bolt_support_far_y_center_offset, 0]) // Far left.
-    bolt_support(bolt_support_height, bolt_support_hole_diameter, bolt_support_wall_thickness);
-
-color("green", 0.5)
-  translate([bolt_support_x_center_offset, bolt_support_far_y_center_offset, 0]) // Far right.
-    bolt_support(bolt_support_height, bolt_support_hole_diameter, bolt_support_wall_thickness);
-
-color("green", 0.5)
-  translate([-bolt_support_x_center_offset, bolt_support_far_y_center_offset-bolt_support_y_distance, 0]) // Near left.
-    bolt_support(bolt_support_height, bolt_support_hole_diameter, bolt_support_wall_thickness);
-
-color("green", 0.5)
-  translate([bolt_support_x_center_offset, bolt_support_far_y_center_offset-bolt_support_y_distance, 0]) // Near right.
-    bolt_support(bolt_support_height, bolt_support_hole_diameter, bolt_support_wall_thickness);
 
 module case_bottom(width, depth, height, wall_thickness) {
   translate([0, 0, (height+wall_thickness)/2])
