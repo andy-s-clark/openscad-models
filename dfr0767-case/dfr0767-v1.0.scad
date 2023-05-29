@@ -24,6 +24,10 @@ bolt_support_y_distance = 33.00; // y distance between the sets of supports.
 rj45_cutout_height = 16.00;
 rj45_cutout_width = 32.00;
 
+power_cutout_width = 12.00;
+power_cutout_height = 4.00;
+power_cutout_x_offset = 5.00;
+
 interior_width = case_width+pcb_tolerance;
 interior_depth = case_depth+pcb_tolerance;
 interior_height = case_height+pcb_tolerance;
@@ -35,9 +39,12 @@ bolt_support_far_y_center_offset = interior_depth/2-bolt_support_pcb_far_offset;
 color("blue", 0.5)
   difference() {
     case_bottom(interior_width, interior_depth, interior_height, wall_thickness);
-    translate([interior_width/2 - rj45_cutout_width, -wall_thickness-interior_depth/2 , pcb_height-rj45_cutout_height]) // RJ45 cutout
+    translate([-interior_width/2, -wall_thickness-interior_depth/2 , pcb_height-rj45_cutout_height]) // RJ45 cutout
       cube([rj45_cutout_width, wall_thickness-punch_out_width, rj45_cutout_height]);
+    translate([interior_width/2 - power_cutout_width - power_cutout_x_offset, -wall_thickness-interior_depth/2, pcb_height-power_cutout_height]) // Power cutout
+      cube([power_cutout_width, wall_thickness-punch_out_width, power_cutout_height]);
   }
+  
 
 color("green", 0.5)
   translate([-bolt_support_x_center_offset, bolt_support_far_y_center_offset, 0]) // Far left.
