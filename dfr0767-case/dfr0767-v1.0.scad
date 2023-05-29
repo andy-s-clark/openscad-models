@@ -9,7 +9,7 @@ case_height = 30.00; // Does not include the heat sink which sticks out the top.
 case_depth = 61.50;
 
 wall_thickness = 2.00; // YMMV.
-punch_out_width = 1.00; // Cutouts used for support to be punched out after printing. Set to zero if printed with supports.
+punch_out_width = 0.50; // Cutouts used for support to be punched out after printing. Set to zero if printed with supports.
 pcb_tolerance = 0.50; // Extra space around the edges of the PCB.
 pcb_height = 18.00; // Height above the bottom of the case.
 
@@ -31,6 +31,9 @@ power_cutout_x_offset = 5.00;
 gpio_cutout_width = 34.00;
 gpio_cutout_depth = 6.00;
 
+usb_cutout_height = 3.50;
+usb_cutout_width = 20.00;
+
 fan_wires_track_width = 5;
 fan_wires_track_height = 10;
 
@@ -47,7 +50,8 @@ bolt_support_height = pcb_height - bolt_support_height_offset;
 bolt_support_x_center_offset = bolt_support_x_distance/2; // x distance between the center and the bolt_support.
 bolt_support_far_y_center_offset = interior_depth/2-bolt_support_pcb_far_offset; // y distance between the center and the far bolt_support.
 
-color("blue", 0.8)
+
+color("blue", 0.5)
 union() {
   // case_bottom w/ cutouts
   difference() {
@@ -60,6 +64,10 @@ union() {
     // Power cutout
     translate([interior_width/2 - power_cutout_width - power_cutout_x_offset, -wall_thickness-interior_depth/2, pcb_height-power_cutout_height])
       cube([power_cutout_width, wall_thickness-punch_out_width, power_cutout_height]);
+
+    // USB/reset cutout
+    translate([interior_width/2+punch_out_width, -interior_depth/2, pcb_height])
+      cube([wall_thickness-punch_out_width, usb_cutout_width, usb_cutout_height]);
 
     // GPIO cutout
     translate([-gpio_cutout_width/2, interior_depth/2-gpio_cutout_depth, 0])
