@@ -10,10 +10,10 @@ case_depth = 61.50;
 
 wall_thickness = 2.00; // YMMV.
 punch_out_width = 0.50; // Cutouts used for support to be punched out after printing. Set to zero if printed with supports.
-pcb_tolerance = 0.50; // Extra space around the edges of the PCB.
+pcb_tolerance = 2.00; // Extra space around the edges of the PCB.
 pcb_height = 18.00; // Height above the bottom of the case.
 
-bolt_support_hole_diameter = 2.55;
+bolt_support_hole_diameter = 3.5; // M2.5 slides in okay.
 bolt_support_height_offset = 3.00; // Account for bolts and washers on the bottom of the PCB.
 bolt_support_wall_thickness = 2.00;
 bolt_support_pcb_far_offset = 3.50;
@@ -38,25 +38,17 @@ fan_wires_track_width = 5;
 fan_wires_track_height = 10;
 
 mount_support_width = 16.00;
-mount_support_hole_diameter = 3.00;
+mount_support_hole_diameter = 4.00;
 
 
 
 interior_width = case_width+pcb_tolerance;
 interior_depth = case_depth+pcb_tolerance;
-interior_height = case_height+pcb_tolerance;
+interior_height = case_height;
 
 bolt_support_height = pcb_height - bolt_support_height_offset;
 bolt_support_x_center_offset = bolt_support_x_distance/2; // x distance between the center and the bolt_support.
 bolt_support_far_y_center_offset = interior_depth/2-bolt_support_pcb_far_offset; // y distance between the center and the far bolt_support.
-
-//color("red", 1.0)
-//    translate([interior_width/2, -interior_depth/2, pcb_height])
-//      difference() {
-//        cube([wall_thickness, usb_cutout_width, usb_cutout_height]);
-//        translate([(wall_thickness-punch_out_width)/2, 0, 0])
-//          cube([punch_out_width, usb_cutout_width, usb_cutout_height]);
-//      }
 
 
 color("blue", 0.5)
