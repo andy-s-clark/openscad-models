@@ -9,7 +9,7 @@ case_height = 30.00; // Does not include the heat sink which sticks out the top.
 case_depth = 61.50;
 
 wall_thickness = 2.00; // YMMV.
-punch_out_width = 0.50; // Cutouts used for support to be punched out after printing. Set to zero if printed with supports.
+punch_out_width = 0.25; // Cutouts used for support to be punched out after printing. Set to zero if printed with supports.
 pcb_tolerance = 2.00; // Extra space around the edges of the PCB.
 pcb_height = 18.00; // Height above the bottom of the case.
 
@@ -34,6 +34,9 @@ gpio_cutout_depth = 6.00;
 usb_cutout_height = 3.50;
 usb_cutout_width = 20.00;
 
+sdcard_cutout_height = 5.00;
+sdcard_cutout_width = 25.00;
+
 fan_wires_track_width = 5;
 fan_wires_track_height = 10;
 
@@ -49,7 +52,6 @@ interior_height = case_height;
 bolt_support_height = pcb_height - bolt_support_height_offset;
 bolt_support_x_center_offset = bolt_support_x_distance/2; // x distance between the center and the bolt_support.
 bolt_support_far_y_center_offset = interior_depth/2-bolt_support_pcb_far_offset; // y distance between the center and the far bolt_support.
-
 
 color("blue", 0.5)
 union() {
@@ -79,6 +81,14 @@ union() {
         cube([wall_thickness, usb_cutout_width, usb_cutout_height]);
         translate([(wall_thickness-punch_out_width)/2, 0, 0])
           cube([punch_out_width, usb_cutout_width, usb_cutout_height]);
+      }
+
+    // SDCard / Power Light cutout
+    translate([-interior_width/2-wall_thickness, 0, pcb_height-sdcard_cutout_height])
+      difference() {
+        cube([wall_thickness, sdcard_cutout_width, sdcard_cutout_height]);
+        translate([(wall_thickness-punch_out_width)/2, 0, 0])
+          cube([punch_out_width, sdcard_cutout_width, sdcard_cutout_height]);
       }
 
     // GPIO cutout
