@@ -14,7 +14,7 @@ pcb_tolerance = 2.00; // Extra space around the edges of the PCB.
 pcb_height = 18.00; // Height above the bottom of the case.
 
 bolt_support_hole_diameter = 3.5; // M2.5 slides in okay.
-bolt_support_height_offset = 3.00; // Account for bolts and washers on the bottom of the PCB.
+bolt_support_height_offset = 5.00; // Account for bolts and washers on the bottom of the PCB.
 bolt_support_wall_thickness = 2.00;
 bolt_support_pcb_far_offset = 3.50;
 bolt_support_pcb_left_offset = 3.50;
