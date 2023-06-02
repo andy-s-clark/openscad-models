@@ -5,7 +5,7 @@
 
 // Interior dimensions.
 case_width = 55.00;
-case_height = 30.00; // Does not include the heat sink which sticks out the top.
+case_height = 25.00; // Does not include the heat sink which sticks out the top.
 case_depth = 61.50;
 
 wall_thickness = 2.00; // YMMV.
