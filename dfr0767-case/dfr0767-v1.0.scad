@@ -14,7 +14,7 @@ case_height = 25.00; // Does not include the heat sink which sticks out the top.
 case_depth = 61.50;
 
 wall_thickness = 2.00; // YMMV.
-punch_out_width = 0.25; // Cutouts used for support to be punched out after printing. Set to zero if printed with supports.
+punch_out_width = 0.00; // Cutouts used for support to be punched out after printing. Set to zero if printed with supports or supports are not needed.
 pcb_tolerance = 2.00; // Extra space around the edges of the PCB.
 pcb_height = 18.00; // Height above the bottom of the case.
 
@@ -89,8 +89,8 @@ if (show_lid) {
 
     // Main lid section
     color("green", 0.5)
-      translate([-interior_width/2, -interior_depth/2, 0])
-        cube([interior_width, lid_depth, wall_thickness]);
+      translate([lid_joint_tolerance-interior_width/2, -interior_depth/2+lid_joint_tolerance, 0])
+        cube([interior_width-2*lid_joint_tolerance, lid_depth-lid_joint_tolerance, wall_thickness]);
   }
 }
 
