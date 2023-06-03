@@ -36,8 +36,9 @@ power_cutout_x_offset = 5.00;
 gpio_cutout_width = 34.00;
 gpio_cutout_depth = 6.00;
 
-usb_cutout_height = 3.50;
+usb_cutout_height = 5.00;
 usb_cutout_width = 20.00;
+usb_cutout_offset = 3.50;
 
 sdcard_cutout_height = 5.00;
 sdcard_cutout_width = 25.00;
@@ -129,7 +130,7 @@ if (show_case) {
         }
 
       // USB/reset cutout
-      translate([interior_width/2, -interior_depth/2, pcb_height-usb_cutout_height])
+      translate([interior_width/2, usb_cutout_offset-interior_depth/2, pcb_height-usb_cutout_height])
         difference() {
           cube([wall_thickness, usb_cutout_width, usb_cutout_height]);
           translate([(wall_thickness-punch_out_width)/2, 0, 0])
